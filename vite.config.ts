@@ -11,8 +11,7 @@ export default defineConfig({
     rollupOptions:{
       input: {
         main: 'index.html',
-        about: 'src/pages/Login/index.html',
-        restruction: 'src/pages/Restrucion/index.html',
+        login: 'src/pages/Login/index.html',
       },
     }
   }
