@@ -13,9 +13,7 @@ export const Library = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black">
-      <NavBar />
-
+    <div className="w-screen h-full">
       <div className="flex h-[calc(100vh-4rem)]">
         {/* Left side - Library Item */}
         <div className="w-1/3 p-6 overflow-y-auto">
@@ -23,10 +21,10 @@ export const Library = () => {
         </div>
 
         {/* Right side - Gaussian Viewer */}
-        <div className="w-2/3 h-full p-6">
+        <div className="w-2/3 h-4/5 p-6">
           <div className="bg-gray-900 rounded-lg p-6 h-full">
             <h2 className="text-2xl font-bold text-white mb-4">Model Viewer</h2>
-            <div className="h-[calc(100%-4rem)] relative">
+            <div className="h-[calc(100%-6rem)] relative">
               <GaussianViewer fileUrl={selectedModelUrl} />
             </div>
           </div>

@@ -4,8 +4,12 @@ export const NavBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   return (
-    <nav className='flex justify-between items-center px-8 py-10 w-full text-white'>
-      <div className='text-5xl font-medium cursor-pointer'>Logo</div>
+    <nav className='flex justify-between items-center px-20 py-10 w-full text-white'>
+      <img
+        src="/public/logo-cntt2021.png"
+        alt="Logo CNTT 2021"
+        className="w-20 h-20 cursor-pointer"
+      />
       <ul className='flex items-center gap-20 mr-10'>
         <li>
           <Link to="/">
@@ -15,17 +19,17 @@ export const NavBar = () => {
         <li>
           <Link to="/about">
             <a className="hover:text-blue-400 transition-colors duration-300">Restruction</a>
-            </Link>
+          </Link>
         </li>
         <li>
           <Link to="/library">
             <a className="hover:text-blue-400 transition-colors duration-300">Library</a>
-            </Link>
+          </Link>
         </li>
         <li>
           <Link to="/res">
             <a className="hover:text-blue-400 transition-colors duration-300">History</a>
-            </Link>
+          </Link>
         </li>
       </ul>
     </nav>

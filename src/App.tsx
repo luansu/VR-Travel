@@ -1,3 +1,4 @@
+import Background from "./components/Background";
 import { NavBar } from "./components/NavBar";
 import Home from "./pages/Home";
 import { Library } from "./pages/Library";
@@ -7,8 +8,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 function App() {
   return (
     <BrowserRouter>
-      <div className="">
+      <div className="flex flex-col items-center justify-center gap-10">
         <NavBar />
+        <Background />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="home" element={<Home />} />
