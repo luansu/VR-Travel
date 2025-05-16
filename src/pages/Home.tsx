@@ -1,5 +1,3 @@
-import Background from "../components/background/Background"
-import { NavBar } from "../components/navbar/NavBar"
 import { GaussianViewer } from "../components/GaussianViewer"
 
 

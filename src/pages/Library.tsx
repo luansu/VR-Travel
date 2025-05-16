@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { NavBar } from "../components/navbar/NavBar";
 import { LibraryItem } from "../components/LibraryItem";
 import { GaussianViewer } from "../components/GaussianViewer";
 

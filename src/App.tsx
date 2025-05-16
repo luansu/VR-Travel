@@ -8,7 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex flex-col items-center justify-center gap-10">
+      <div className="flex flex-col items-center justify-center gap-2">
         <NavBar />
         <Background />
         <Routes>

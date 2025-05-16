@@ -1,4 +1,5 @@
 import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { AvatarMenu } from './AvatarMenu';
 
 export const NavBar = () => {
   const location = useLocation();
@@ -17,7 +18,7 @@ export const NavBar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/about">
+          <Link to="/res">
             <a className="hover:text-blue-400 transition-colors duration-300">Restruction</a>
           </Link>
         </li>
@@ -27,10 +28,11 @@ export const NavBar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/res">
+          <Link to="/history">
             <a className="hover:text-blue-400 transition-colors duration-300">History</a>
           </Link>
         </li>
+        <AvatarMenu />
       </ul>
     </nav>
   )
