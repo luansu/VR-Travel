@@ -1,9 +1,9 @@
-import { listFiles,uploadFile } from "@huggingface/hub";
+import { listFiles,uploadFile, } from "@huggingface/hub";
 export class HuggingFaceDatasetManager {
   private repoId: string;
   private accessToken: string;
   
-  constructor(repoId: string) {
+  constructor() {
     this.repoId = "XuanHuy224/GaussianSample"; // Fixed repo ID
     this.accessToken = import.meta.env.VITE_HUGGING_FACE_API_KEY;
   }
