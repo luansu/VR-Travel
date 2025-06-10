@@ -38,24 +38,6 @@ export const AvatarMenu = () => {
         anchor="bottom"
         className="absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-md p-2 z-10"
       >
-        <a
-          href="/analytics"
-          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-        >
-          Analytics
-        </a>
-        <a
-          href="/engagement"
-          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-        >
-          Engagement
-        </a>
-        <a
-          href="/security"
-          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-        >
-          Security
-        </a>
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded text-left"

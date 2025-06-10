@@ -5,11 +5,13 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import { loginUser, registerUser } from "../api/user/userApi";
 
 interface User {
   username: string;
   email: string;
   password: string;
+  full_name?: string;
 }
 
 interface AuthContextType {
@@ -18,7 +20,8 @@ interface AuthContextType {
   signup: (
     username: string,
     email: string,
-    password: string
+    password: string,
+    full_name?: string
   ) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -30,7 +33,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check localStorage on mount
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -40,48 +42,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = async (
     username: string,
     email: string,
-    password: string
+    password: string,
+    full_name?: string
   ): Promise<boolean> => {
-    // Check if user already exists
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    if (users.some((u: User) => u.username === username)) {
+    try {
+      const res = await registerUser({ username, email, password, full_name });
+      if (res.status === 201) {
+        const newUser: User = { username, email, password, full_name };
+        setUser(newUser);
+        localStorage.setItem("user", JSON.stringify(newUser));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Signup error:", error);
       return false;
     }
-
-    // Add new user to users array
-    const newUser = { username, email, password };
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-
-    // Log in the new user
-    setUser(newUser);
-    localStorage.setItem("user", JSON.stringify(newUser));
-    return true;
   };
 
   const login = async (
     username: string,
     password: string
   ): Promise<boolean> => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const user = users.find(
-      (u: User) => u.username === username && u.password === password
-    );
-
-    if (user) {
-      setUser(user);
-      localStorage.setItem("user", JSON.stringify(user));
-      return true;
+    try {
+      const res = await loginUser({ username, password });
+      if (res && res.access_token) {
+        setUser(res.user);
+        localStorage.setItem("user", JSON.stringify(res.user));
+        localStorage.setItem("token", res.access_token);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Login error:", error);
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
-  const value = {
+  const value: AuthContextType = {
     user,
     login,
     signup,
@@ -89,7 +93,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!user,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

@@ -15,7 +15,7 @@ export const Sidebar = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-60 bg-gray-800 text-white p-4 rounded-tl-2xl rounded-bl-2xl">
+      <div className="w-60 bg-gray-800 text-white p-6 rounded-tl-2xl rounded-bl-2xl">
         <h2 className="text-2xl font-bold mb-6">Menu</h2>
         <ul className="space-y-2">
           {menuItems.map((item) => (

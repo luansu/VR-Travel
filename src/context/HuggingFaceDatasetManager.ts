@@ -4,13 +4,10 @@ export class HuggingFaceDatasetManager {
   private accessToken: string;
   
   constructor() {
-    this.repoId = "XuanHuy224/GaussianSample"; // Fixed repo ID
+    this.repoId = "XuanHuy224/GaussianSample";
     this.accessToken = import.meta.env.VITE_HUGGING_FACE_API_KEY;
   }
 
-  /**
-   * List all files in the dataset
-   */
   async listAllFiles(): Promise<{ path: string, size: number }[]> {
     try {
       const files = await listFiles({

@@ -3,7 +3,6 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import { AvatarMenu } from "./AvatarMenu";
 
 export const NavBar = () => {
-  // Add padding to body to account for fixed navbar
   useEffect(() => {
     document.body.style.paddingTop = "72px";
     return () => {

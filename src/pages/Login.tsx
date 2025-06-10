@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -28,6 +28,13 @@ export default function Login() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const user = localStorage.getItem("user")
+    if(user){
+      navigate('/')
+    }
+  }, [])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">

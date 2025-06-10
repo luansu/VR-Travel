@@ -13,7 +13,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="flex flex-col items-center justify-center gap-2">
+        <div className="flex flex-col items-center justify-center gap-2 pt-10">
           <NavBar />
           <Background />
           <Routes>
