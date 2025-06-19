@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { uploadFiles } from "../api/upload/uploadApi";
 
 export const UploadSide = () => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState<File[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [videos, setVideos] = useState([]);
   const [extractedFrames, setExtractedFrames] = useState([]);
   const [confirm, setConfirm] = useState(false);
@@ -32,6 +34,13 @@ export const UploadSide = () => {
     }
   }, [videoStatus])
 
+  // Clean up object URLs when component unmounts or images change
+  useEffect(() => {
+    return () => {
+      imageUrls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [imageUrls]);
+
   const handleImageUploadClick = () => {
     if (imageInputRef.current != null) {
       imageInputRef.current.click();
@@ -45,7 +54,10 @@ export const UploadSide = () => {
   };
 
   const handleCancelImage = () => {
+    // Revoke all object URLs before clearing
+    imageUrls.forEach(url => URL.revokeObjectURL(url));
     setImages([]);
+    setImageUrls([]);
     setImgStatus({ num: 0, capacity: 0 });
   };
 
@@ -55,13 +67,26 @@ export const UploadSide = () => {
     setVideoStatus({ num: 0, capacity: 0 });
   };
 
-  const removeImage = (index: any) => {
+  const removeImage = (index: number) => {
     const newImages = images.filter((_, i) => i !== index);
+    const newImageUrls = imageUrls.filter((_, i) => i !== index);
+    
+    // Revoke the URL for the removed image
+    URL.revokeObjectURL(imageUrls[index]);
+    
     setImages(newImages);
+    setImageUrls(newImageUrls);
 
     // Cập nhật lại status nếu cần
     if (newImages.length === 0) {
       setImgStatus({ num: 0, capacity: 0 });
+    } else {
+      // Recalculate total size
+      const totalSize = newImages.reduce((sum, file) => sum + file.size, 0);
+      setImgStatus({
+        num: newImages.length,
+        capacity: totalSize
+      });
     }
   };
 
@@ -90,34 +115,33 @@ export const UploadSide = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const handleImageChange = (event : any) => {
-    const files = Array.from(event.target.files);
-    const imageData = files.map((file : any) => ({
-      url: URL.createObjectURL(file),
-      file: file,
-      name: file.name
-    }));
-
+  const handleImageChange = (event: any) => {
+    const files = Array.from(event.target.files) as File[];
+    
+    // Create object URLs for preview
+    const urls = files.map(file => URL.createObjectURL(file));
+    
     // Tính tổng dung lượng
-    const totalSize = files.reduce((sum, file : any) => sum + file.size, 0);
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
 
-    setImages(imageData);
+    setImages(files);
+    setImageUrls(urls);
     setImgStatus({
       num: files.length,
       capacity: totalSize
     });
   };
 
-  const handleVideoChange = (event : any) => {
+  const handleVideoChange = (event: any) => {
     const files = Array.from(event.target.files);
-    const videoData = files.map((file : any) => ({
+    const videoData = files.map((file: any) => ({
       url: URL.createObjectURL(file),
       file: file,
       name: file.name
     }));
 
     // Tính tổng dung lượng
-    const totalSize = files.reduce((sum, file : any) => sum + file.size, 0);
+    const totalSize = files.reduce((sum, file: any) => sum + file.size, 0);
 
     setVideos(videoData);
     setVideoStatus({
@@ -203,7 +227,7 @@ export const UploadSide = () => {
 
   const handleNameSubmit = async () => {
     if (!reconstructionName.trim()) {
-      alert('Please enter a name for the reconstruction');
+      alert("Please enter a name for the reconstruction");
       return;
     }
 
@@ -211,19 +235,36 @@ export const UploadSide = () => {
     setShowNameForm(false);
 
     try {
-      console.log('Starting reconstruction with name:', reconstructionName);
-      console.log('Images:', images);
-      console.log('Extracted frames:', extractedFrames);
-      
-      await new Promise(resolve => setTimeout(resolve, 2000)); 
-      
-      console.log('Reconstruction completed!');
-      
+      console.log("Starting reconstruction with name:", reconstructionName);
+      console.log("Images (File[]):", images);
+      console.log("Extracted frames:", extractedFrames);
+
+      const token = localStorage.getItem('token');
+      const folder = reconstructionName;
+
+      if (!token) {
+        throw new Error("No authentication token found. Please log in again.");
+      }
+
+      // Now images is File[] array, ready to be passed to API
+      const response = await uploadFiles(images, folder, token);
+      console.log("Upload response:", response);
+      if(response.status === 'success'){
+        handleCancelImage()
+        handleCancelVideo()
+        alert("Upload thành công!");
+      } else {
+        alert("Upload không thành công!!!");
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      console.log("Reconstruction completed!");
     } catch (error) {
-      console.error('Error during reconstruction:', error);
+      console.error("Error during reconstruction:", error);
     } finally {
       setIsReconstructing(false);
-      setReconstructionName('');
+      setReconstructionName("");
     }
   };
 
@@ -263,7 +304,7 @@ export const UploadSide = () => {
             disabled={isReconstructing}
             className="w-full px-4 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition disabled:bg-gray-400 font-medium"
           >
-            {isReconstructing ? 'Reconstructing...' : 'Start Reconstruction'}
+            {isReconstructing ? 'Uploading...' : 'Upload'}
           </button>
         </div>
       )}
@@ -298,7 +339,7 @@ export const UploadSide = () => {
                 disabled={!reconstructionName.trim()}
                 className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition disabled:bg-gray-400"
               >
-                Start Reconstruction
+                Upload
               </button>
             </div>
           </div>
@@ -317,10 +358,10 @@ export const UploadSide = () => {
             </div>
             <div className="overflow-x-auto max-h-56 border rounded p-2">
               <div className="flex flex-wrap gap-2">
-                {images.map((img, index) => (
+                {imageUrls.map((url, index) => (
                   <div key={index} className="relative w-[calc(100%/6-8px)]">
                     <img
-                      src={img.url}
+                      src={url}
                       alt={`preview-${index}`}
                       className="w-full h-24 object-cover rounded border"
                     />
@@ -330,6 +371,10 @@ export const UploadSide = () => {
                     >
                       ×
                     </button>
+                    {/* Show filename */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs px-1 py-0.5 truncate">
+                      {images[index].name}
+                    </div>
                   </div>
                 ))}
               </div>

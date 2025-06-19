@@ -17,7 +17,7 @@ export const NavBar = () => {
     { to: "/", label: "Home", icon: "🏠" },
     { to: "/res", label: "Restruction", icon: "🏗️" },
     { to: "/library", label: "Library", icon: "📚" },
-    { to: "/history", label: "History", icon: "⏱️" },
+    // { to: "/history", label: "History", icon: "⏱️" },
   ];
 
   return (
